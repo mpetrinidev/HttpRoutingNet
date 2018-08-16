@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -24,6 +26,19 @@ namespace Core1_1
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
+            services.AddApiVersioning(_ =>
+            {
+                _.ReportApiVersions = true;
+                _.DefaultApiVersion = new ApiVersion(1, 0);
+                _.AssumeDefaultVersionWhenUnspecified = true;
+                _.ApiVersionReader = ApiVersionReader.Combine(
+                    new QueryStringApiVersionReader("version"),
+                    new HeaderApiVersionReader()
+                    {
+                        HeaderNames = { "x-api-version" }
+                    });
+            });
+
             services.AddMvc();
         }
 
